@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Provo një asistent automatik për rezervime, siç do ta kishte biznesi yt.">
+<title>Demo e gjallë – Rrjedha</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF3F1;--surface:#FFFFFF;--ink:#10231F;--muted:#4B6560;--line:#CBD9D4;--accent:#0B6E5C;--accent-ink:#FFFFFF;--hot:#F2A33A;--in:#E3EBE8;--out:#0B6E5C;--out-ink:#FFFFFF;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1816;--surface:#142421;--ink:#E8F1EE;--muted:#9DB5AF;--line:#274038;--accent:#3FC3A6;--accent-ink:#06211B;--in:#1D322D;--out:#3FC3A6;--out-ink:#06211B}}
+:root[data-theme="dark"]{--bg:#0D1816;--surface:#142421;--ink:#E8F1EE;--muted:#9DB5AF;--line:#274038;--accent:#3FC3A6;--accent-ink:#06211B;--in:#1D322D;--out:#3FC3A6;--out-ink:#06211B}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;line-height:1.1;margin:0;letter-spacing:-.02em}
+a{color:inherit}
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.logo{font:800 24px "Bricolage Grotesque",sans-serif;text-decoration:none}
+.logo i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--hot);margin-left:3px}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:12px 22px;border-radius:999px;font-weight:500;text-decoration:none;border:0;font-family:inherit;font-size:16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px}
+h1{font-size:clamp(34px,5.5vw,56px);font-weight:800;margin:24px 0 14px}
+.lead{color:var(--muted);max-width:38em;margin:0 0 26px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.tab{border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:9px 18px;border-radius:999px;font:500 15px "IBM Plex Sans",sans-serif;cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.demo{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:start}
+.phone,.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:24px;padding:18px}
+.top{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:10px;font-size:15px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 16px "Bricolage Grotesque",sans-serif}
+.top small{display:block;color:var(--muted);font-size:12.5px}
+#msgs{height:340px;overflow-y:auto;padding:4px 2px}
+.msg{padding:10px 14px;border-radius:16px;margin:8px 0;max-width:86%;font-size:15.5px;line-height:1.45}
+.in{background:var(--in);border-bottom-left-radius:4px}
+.out{background:var(--out);color:var(--out-ink);margin-left:auto;border-bottom-right-radius:4px}
+#quick{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0 4px;min-height:52px}
+#quick button{border:1.5px solid var(--accent);background:transparent;color:var(--ink);padding:8px 14px;border-radius:999px;font:500 14.5px "IBM Plex Sans",sans-serif;cursor:pointer}
+#quick button:hover{background:var(--accent);color:var(--accent-ink)}
+.send{display:flex;gap:8px;margin-top:8px}
+.send input{flex:1;min-width:0;font:inherit;font-size:15.5px;padding:11px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.panel h2{font-size:22px;margin-bottom:6px}
+.panel p{color:var(--muted);font-size:15px;margin:0 0 14px}
+#log{list-style:none;padding:0;margin:0;min-height:200px}
+#log li{padding:11px 0;border-top:1px solid var(--line);font-size:15px}
+#log li b{display:block;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.empty{color:var(--muted);border:0!important}
+.note{font-size:13px;color:var(--muted);margin-top:12px}
+.final{margin:56px 0 40px;background:var(--accent);color:var(--accent-ink);border-radius:26px;padding:40px 28px;text-align:center}
+.final h2{font-size:clamp(26px,4vw,36px);margin-bottom:10px}
+.final p{margin:0 auto 22px;max-width:30em;opacity:.92}
+.final .btn{background:var(--accent-ink);color:var(--accent)}
+footer{padding:0 0 40px;color:var(--muted);font-size:14px}
+@media (max-width:820px){.demo{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a class="logo" href="index.html">Rrjedha<i></i></a><a class="btn ghost" href="index.html#kontakt">Na shkruaj</a></header>
+
+<h1>Provo një asistent në veprim</h1>
+<p class="lead">Zgjidh një lloj biznesi dhe bisedo si klient: rezervo një termin, pyet për çmimet ose orarin. Në të djathtë shikon çfarë ndodh në prapavijë për pronarin.</p>
+
+<div class="tabs" role="group" aria-label="Lloji i biznesit">
+  <button class="tab" data-b="klinike" aria-pressed="true">Klinikë dentare</button>
+  <button class="tab" data-b="paruke" aria-pressed="false">Parukeri</button>
+  <button class="tab" data-b="restorant" aria-pressed="false">Restorant</button>
+</div>
+
+<div class="demo">
+  <div class="phone">
+    <div class="top"><div class="av" id="av">K</div><div><span id="bname"></span><small>asistent automatik · në linjë</small></div></div>
+    <div id="msgs" aria-live="polite"></div>
+    <div id="quick"></div>
+    <div class="send"><input id="txt" placeholder="Shkruaj një mesazh..." aria-label="Mesazhi yt" autocomplete="off"><button class="btn" id="go">Dërgo</button></div>
+  </div>
+  <div class="panel">
+    <h2>Prapa skenave</h2>
+    <p>Kështu duket pronari kur klienti rezervon.</p>
+    <ul id="log"><li class="empty">Ende asgjë. Rezervo një termin në bisedë.</li></ul>
+    <div class="note">Çmimet, orari dhe adresa janë të dhëna shembull. Për biznesin tënd i vendosim të vërtetat.</div>
+  </div>
+</div>
+
+<div class="final">
+  <h2>Të duhet një si ky për biznesin tënd?</h2>
+  <p>Konsulta e parë është falas dhe zgjat 30 minuta. Ta përshtatim me çmimet, orarin dhe stilin tënd.</p>
+  <a class="btn" href="index.html#kontakt">Merr konsultë falas</a>
+</div>
+<footer>© 2026 Rrjedha · Kjo bisedë është demo e programuar, jo një bisedë me njeri.</footer>
+</div>
+
+<script>
+const DAYS=["E enjte","E premte","E shtunë"], TIMES=["10:30","13:00","16:30"];
+const BIZ={
+ klinike:{name:"Klinika Dental Demo",av:"K",book:"Rezervo termin",ask:"Cilin shërbim dëshironi?",opts:[["Pastrim dhëmbësh","30 €"],["Kontroll","15 €"],["Zbardhim","120 €"]],hours:"E hënë – e premte 09:00–18:00, e shtunë 09:00–14:00.",addr:"Rruga Shembull 12, Prishtinë.",what:"termini"},
+ paruke:{name:"Salon Demo",av:"S",book:"Rezervo termin",ask:"Çfarë shërbimi dëshironi?",opts:[["Qethje","8 €"],["Ngjyrosje","35 €"],["Make-up","25 €"]],hours:"E hënë – e shtunë 09:00–19:00.",addr:"Rruga Shembull 5, Prishtinë.",what:"termini"},
+ restorant:{name:"Restorant Demo",av:"R",book:"Rezervo tavolinë",ask:"Për sa persona?",opts:[["2 persona",""],["4 persona",""],["6 persona ose më shumë",""]],hours:"Çdo ditë 11:00–23:00.",addr:"Sheshi Shembull 1, Prishtinë.",what:"rezervimi"}
+};
+const $=id=>document.getElementById(id);
+let key="klinike",b=BIZ[key],st={step:"menu"},busy=false;
+function add(text,cls){const d=document.createElement("div");d.className="msg "+cls;d.textContent=text;$("msgs").appendChild(d);$("msgs").scrollTop=$("msgs").scrollHeight}
+function bot(text){add(text,"in")}
+function setQ(list){const q=$("quick");q.innerHTML="";list.forEach(t=>{const x=document.createElement("button");x.type="button";x.textContent=t;x.onclick=()=>send(t);q.appendChild(x)})}
+function menu(){st={step:"menu"};setQ([b.book,"Çmimet","Orari","Adresa"])}
+function addLog(title,text){const ul=$("log");const e=ul.querySelector(".empty");if(e)e.remove();const li=document.createElement("li");const t=document.createElement("b");t.textContent=title;li.appendChild(t);li.appendChild(document.createTextNode(text));ul.appendChild(li)}
+function reset(){$("msgs").innerHTML="";$("log").innerHTML='<li class="empty">Ende asgjë. Rezervo një termin në bisedë.</li>';$("bname").textContent=b.name;$("av").textContent=b.av;bot("Përshëndetje! Jam asistenti i "+b.name+". Si mund t’ju ndihmoj?");menu()}
+function startBook(){st={step:"opt"};bot(b.ask);setQ(b.opts.map(o=>o[0]))}
+function repeat(){if(st.step==="opt")setQ(b.opts.map(o=>o[0]));else if(st.step==="day")setQ(DAYS);else if(st.step==="time")setQ(TIMES);else if(st.step==="name")setQ([]);else menu()}
+function done(){const s=st;bot("U rezervua, "+s.name+"! "+s.opt+", "+s.day+" në "+s.time+", te "+b.name+". Do të merrni një kujtesë një ditë më parë.");
+ addLog("Kalendari",s.day+" · "+s.time+" · "+s.name+" · "+s.opt);
+ addLog("Kujtesë","Mesazh automatik do t’i dërgohet klientit 24 orë para.");
+ addLog("Njoftim","Pronari u njoftua në WhatsApp. Nuk bëri asgjë.");
+ st={step:"menu"};setQ([b.book+" përsëri","Orari"])}
+function respond(t){const l=t.toLowerCase();
+ if(st.step==="name"){st.name=t.slice(0,40);return done()}
+ if(st.step==="opt"){const o=b.opts.find(x=>l.includes(x[0].toLowerCase()));if(o){st.opt=o[0];st.step="day";bot("Mirë. Cilën ditë ju përshtatet?");return setQ(DAYS)}}
+ else if(st.step==="day"){const d=DAYS.find(x=>l.includes(x.toLowerCase()));if(d){st.day=d;st.step="time";bot("Ora sa?");return setQ(TIMES)}}
+ else if(st.step==="time"){const m=TIMES.find(x=>l.includes(x));if(m){st.time=m;st.step="name";bot("Në cilin emër ta shënoj "+b.what+"?");return setQ([])}}
+ if(/(rezerv|termin|tavolin)/.test(l))return startBook();
+ if(/(çmim|cmim|kushton|pages)/.test(l)){const has=b.opts.some(o=>o[1]);bot(has?b.opts.map(o=>o[0]+": "+o[1]).join(" · "):"Rezervimi është falas. Çmimet varen nga menuja që zgjidhni në vend.");return repeat()}
+ if(/(orar|hapur|mbyll|kur )/.test(l)){bot("Orari: "+b.hours);return repeat()}
+ if(/(adres|ku ndodh|lokacion|ku jeni)/.test(l)){bot("Na gjeni te: "+b.addr);return repeat()}
+ bot("Këtë pyetje nuk e di ta përgjigjem vetë. E kalova te stafi dhe do t’ju kontaktojë së shpejti.");
+ addLog("Pyetje e re",""+t.slice(0,80)+" (e kaluar te pronari)");repeat()}
+function send(t){t=(t||"").trim();if(!t||busy)return;add(t,"out");$("txt").value="";$("quick").innerHTML="";busy=true;setTimeout(()=>{respond(t);busy=false},550)}
+$("go").onclick=()=>send($("txt").value);
+$("txt").addEventListener("keydown",e=>{if(e.key==="Enter")send($("txt").value)});
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{key=t.dataset.b;b=BIZ[key];document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-pressed",x===t));reset()});
+reset();
+</script>
+</body>
+</html>
